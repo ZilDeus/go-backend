@@ -453,6 +453,7 @@ func handleSignup(w http.ResponseWriter, req *http.Request) {
 	_, err = GetUserByEmail(user.Email)
 
 	if err != nil {
+
 		fmt.Println("creating user with email : ", user.Email, " and password : ", user.Password)
 		var Meals = []Meal{{Name: "D1", Dishes: []Dish{{Item: 1, Amount: 200}, {Item: 2, Amount: 100}}, Description: "food"}, {Name: "D2", Dishes: []Dish{{Item: 3, Amount: 51}, {Item: 4, Amount: 400}}, Description: "Food2"}}
 		user.Meals = datatypes.NewJSONSlice(Meals)
