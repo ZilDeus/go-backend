@@ -77,7 +77,7 @@ func startupServer() {
 	r.HandleFunc("/add_item_8", handleAddItem).Methods("POST")
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:      []string{"*"},
+		AllowedOrigins:      []string{"*","https://svelte-k59b4wquf-zildeus.vercel.app"},
 		AllowedMethods:      []string{"GET", "POST"},
 		AllowedHeaders:      []string{"*"},
 		AllowPrivateNetwork: true,
