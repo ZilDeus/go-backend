@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -242,8 +241,10 @@ func handleRemMeal(w http.ResponseWriter, req *http.Request) {
 
 	for i, meal := range meals {
 		if name == meal.Name {
-			meals[i] = meals[len(user.Meals)-1]
-			meals = meals[:len(user.Meals)-1]
+
+			copy(meals[i:], meals[i+1:])
+			meals[len(meals)-1] = Meal{}
+			meals = meals[:len(meals)-1]
 			db.Model(&user).Updates(User{Meals: datatypes.NewJSONSlice(meals)})
 			w.WriteHeader(200)
 			fmt.Println("removed user:", user.ID, "meal", name)
