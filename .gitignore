@@ -1,8 +1,10 @@
+.gitignore
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.db
 
 # Test binary, built with `go test -c`
 *.test
