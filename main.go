@@ -10,8 +10,8 @@ import (
 
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	_ "gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
+	//"gorm.io/driver/sqlite"
 
 	"github.com/rs/cors"
 )
@@ -90,9 +90,9 @@ func startupServer() {
 }
 func GetDB() *gorm.DB {
 	var err error
-  //dsn := "user=postgres password=H0e39EytMYVB12lV host=db.daagzkqbsqqvbecdjtda.supabase.co port=5432 dbname=postgres"
-	//db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+  dsn := "user=postgres password=H0e39EytMYVB12lV host=db.daagzkqbsqqvbecdjtda.supabase.co port=5432 dbname=postgres"
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	//db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Print("in opening database:", err.Error())
 		panic("")
