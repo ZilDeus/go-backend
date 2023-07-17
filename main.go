@@ -9,8 +9,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"gorm.io/datatypes"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 
 	"github.com/rs/cors"
 )
@@ -89,6 +90,8 @@ func startupServer() {
 }
 func GetDB() *gorm.DB {
 	var err error
+  //dsn := "user=postgres password=H0e39EytMYVB12lV host=db.daagzkqbsqqvbecdjtda.supabase.co port=5432 dbname=postgres"
+	//db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Print("in opening database:", err.Error())
@@ -130,8 +133,11 @@ func startupDatabase() {
 	db.Create(&Item{Name: "لهانة", Cratio: 0.32, Pratio: 0.01, Unit: "g"})
 }
 func main() {
+  fmt.Println("testing")
 	startupDatabase()
+  fmt.Println("testing")
 	startupServer()
+  fmt.Println("testing")
 }
 
 func GetItemByIdI(id int32) (Item, error) {
@@ -219,14 +225,14 @@ func handleAddMeal(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	meals = append(meals, Meal{Name: newMeal.Name, Description: newMeal.Name, Dishes: []Dish{}})
+	meals = append(meals, Meal{Name: newMeal.Name, Description: newMeal.Description, Dishes: []Dish{}})
 	db.Model(&user).Updates(User{Meals: datatypes.NewJSONSlice(meals)})
 	w.WriteHeader(200)
 	fmt.Println("add user:", user.ID, "meal", newMeal.Name)
 	fmt.Fprintf(w, "succesfully add users meal %s", newMeal.Name)
 }
 func handleRemMeal(w http.ResponseWriter, req *http.Request) {
-
+  fmt.Println("remove Meal request");
 	if !ValidateKey(&w, req, "AddMeal") {
 		return
 	}
@@ -234,21 +240,25 @@ func handleRemMeal(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	name := req.Header.Get("name")
-	fmt.Println("removnig", name)
+	var removeMeal struct {
+    Name string
+  };
+
+  json.NewDecoder(req.Body).Decode(&removeMeal)
+	fmt.Println("removnig", removeMeal.Name)
 	user, _ := GetUserById(req.Header.Get("Id"))
 	meals := user.Meals
 
 	for i, meal := range meals {
-		if name == meal.Name {
+		if removeMeal.Name == meal.Name {
 
 			copy(meals[i:], meals[i+1:])
 			meals[len(meals)-1] = Meal{}
 			meals = meals[:len(meals)-1]
 			db.Model(&user).Updates(User{Meals: datatypes.NewJSONSlice(meals)})
 			w.WriteHeader(200)
-			fmt.Println("removed user:", user.ID, "meal", name)
-			fmt.Fprintf(w, "succesfully removed users meal %s", name)
+			fmt.Println("removed user:", user.ID, "meal", removeMeal.Name)
+			fmt.Fprintf(w, "succesfully removed users meal %s", removeMeal.Name)
 			return
 		}
 	}
@@ -453,7 +463,6 @@ func handleSignup(w http.ResponseWriter, req *http.Request) {
 	_, err = GetUserByEmail(user.Email)
 
 	if err != nil {
-
 		fmt.Println("creating user with email : ", user.Email, " and password : ", user.Password)
 		var Meals = []Meal{{Name: "صدر دجاج و بتيتة", Dishes: []Dish{{Item: 1, Amount: 200}, {Item: 2, Amount: 100}}, Description: "بروتين+سعرات+طيب"}}
 		user.Meals = datatypes.NewJSONSlice(Meals)
@@ -465,7 +474,7 @@ func handleSignup(w http.ResponseWriter, req *http.Request) {
 	} else {
 		fmt.Println("email:", user.Email, " is  already in use")
 		w.WriteHeader(301)
-		fmt.Fprintf(w, "email already in use")
+		fmt.Fprintf(w,"email already in use")
 		return
 	}
 }
